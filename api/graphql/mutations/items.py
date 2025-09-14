@@ -2,9 +2,11 @@ import graphene
 from graphql import GraphQLError
 from graphql_relay import from_global_id
 
-from ..permissions import check_user_role
+
+from ..permissions import check_permission
+
 from api.models import Item
-from ..schema.items import ItemNode as ItemType  # Usamos un alias
+from ..schema.items import ItemNode as ItemType
 
 
 class CreateItemMutation(graphene.Mutation):
@@ -16,7 +18,8 @@ class CreateItemMutation(graphene.Mutation):
     item = graphene.Field(ItemType)
 
     def mutate(self, info, nombre, descripcion=None):
-        #check_user_role(info.context.user, ["Admin", "Editor"])
+        # Ahora la validación es específica para la acción de crear.
+        check_permission(info.context.user, 'can_create_items')
         item = Item(nombre=nombre, descripcion=descripcion)
         item.save()
         return CreateItemMutation(item=item)
@@ -33,9 +36,9 @@ class UpdateItemMutation(graphene.Mutation):
     item = graphene.Field(ItemType)
 
     def mutate(self, info, id, nombre=None, descripcion=None, is_active=None):
-        #check_user_role(info.context.user, ["Admin", "Editor"])
+        # Validación específica para la acción de actualizar.
+        check_permission(info.context.user, 'can_update_items')
         try:
-            # El ID de Relay debe ser decodificado
             real_id = from_global_id(id)[1]
             item = Item.objects.get(pk=real_id, is_deleted=False)
 
@@ -59,7 +62,8 @@ class DeleteItemMutation(graphene.Mutation):
     success = graphene.Boolean()
 
     def mutate(self, info, id):
-        #check_user_role(info.context.user, ["Admin"])
+        # Validación específica para la acción de eliminar.
+        check_permission(info.context.user, 'can_delete_items')
         try:
             real_id = from_global_id(id)[1]
             item = Item.objects.get(pk=real_id)
@@ -77,7 +81,8 @@ class HardDeleteItemMutation(graphene.Mutation):
     success = graphene.Boolean()
 
     def mutate(self, info, id):
-        #check_user_role(info.context.user, ["Admin"])
+        # Se reutiliza el permiso de eliminar, pero podría ser uno propio.
+        check_permission(info.context.user, 'can_delete_items')
         try:
             real_id = from_global_id(id)[1]
             item = Item.objects.get(pk=real_id)

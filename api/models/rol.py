@@ -12,7 +12,18 @@ class Rol(BaseModel):
         unique=True,
         help_text="Nombre único del rol."
     )
-
+    can_create_items = models.BooleanField(
+        default=False,
+        help_text="Permite al rol crear nuevos items."
+    )
+    can_update_items = models.BooleanField(
+        default=False,
+        help_text="Permite al rol editar items existentes."
+    )
+    can_delete_items = models.BooleanField(
+        default=False,
+        help_text="Permite al rol eliminar items."
+    )
     def __str__(self):
         return self.nombre
 

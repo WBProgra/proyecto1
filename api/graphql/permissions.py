@@ -1,5 +1,33 @@
 from graphql import GraphQLError
 
+def check_permission(user, permission_attr: str):
+    """
+    Verifica si un usuario tiene un permiso específico.
+    El permiso se comprueba a través de un atributo booleano en el modelo Rol.
+    Un superusuario siempre tendrá todos los permisos.
+
+    Args:
+        user: La instancia del usuario que realiza la solicitud.
+        permission_attr (str): El nombre del campo de permiso en el modelo Rol
+                               (ej. 'can_create_items').
+    """
+    if not user.is_authenticated:
+        raise GraphQLError("Debes iniciar sesión para realizar esta acción.")
+
+    # El superusuario tiene acceso a todo, sin importar su rol.
+    if user.is_superuser:
+        return True
+
+    # Verifica si el usuario tiene un rol asignado.
+    if not user.rol:
+        raise GraphQLError("No tienes un rol asignado para realizar esta acción.")
+
+    # Comprueba si el rol del usuario tiene el permiso específico activado.
+    # getattr busca de forma segura el atributo en el objeto 'rol'.
+    if not getattr(user.rol, permission_attr, False):
+        raise GraphQLError("No tienes los permisos necesarios para realizar esta acción.")
+
+    return True
 
 def is_authenticated(func):
     """
