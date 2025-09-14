@@ -1,8 +1,8 @@
 import apiClient from './ApiClient';
 
 const LOGIN_MUTATION = `
-  mutation TokenAuth($email: String!, $password: String!) {
-    tokenAuth(email: $email, password: $password) {
+  mutation TokenAuth($username: String!, $password: String!) {
+    tokenAuth(username: $username, password: $password) {
       token
       refreshToken
     }
@@ -25,10 +25,10 @@ const ME_QUERY = `
 `;
 
 const AuthService = {
-  login: (email, password) => {
+  login: (username, password) => {
     return apiClient.post('/graphql/', {
       query: LOGIN_MUTATION,
-      variables: { email, password },
+      variables: { username, password },
     });
   },
 

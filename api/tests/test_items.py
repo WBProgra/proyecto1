@@ -25,8 +25,8 @@ def auth_headers(api_client, test_user):
     Fixture para obtener un token JWT y devolver las cabeceras de autorización.
     """
     mutation = """
-        mutation TokenAuth($email: String!, $password: String!) {
-            tokenAuth(email: $email, password: $password) {
+        mutation TokenAuth($username: String!, $password: String!) {
+            tokenAuth(username: $username, password: $password) {
                 token
             }
         }

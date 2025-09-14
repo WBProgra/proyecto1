@@ -1,6 +1,5 @@
 import React from "react";
 
-
 // Chakra imports
 import {
   Box,
@@ -28,16 +27,8 @@ import SubTitle from "../../../components/texts/SubTitle";
 // Context
 import { useAuth } from "../../../context/AuthContext";
 
-// React router dom
-import { useNavigate } from "react-router-dom";
-
 // React hook form
 import { useForm } from "react-hook-form";
-
-// Services
-import { loginService } from "../../../services/UserServices";
-
-// React hot toast
 import toast from "react-hot-toast";
 
 const LoginPage = () => {
@@ -52,31 +43,22 @@ const LoginPage = () => {
   const handleClick = () => setShow(!show);
 
   // --------------------------------- EXTRA ------------------------------------
-  const { setUser, setToken } = useAuth();
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { isSubmitting },
   } = useForm();
 
-  const navigate = useNavigate();
-
-  const onSubmit = (data) => {
-    loginService(data)
-      .then((response) => {
-        toast.success(response.detail);
-        setUser(response.user);
-        setToken(response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
-        localStorage.setItem("authTokens", JSON.stringify(response.token));
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log("🚀 ~ onSubmit ~ err:", err);
-        const errorMessage = err?.data?.detail || "Error en el inicio de sesión.";
-        toast.error(errorMessage);
-      });
+  const onSubmit = async (data) => {
+    try {
+      await login(data);
+    } catch (err) {
+      // El error ya se muestra a través de un toast en el AuthContext
+      // Podemos agregar lógica adicional aquí si es necesario
+      console.log("Fallo en el submit del login");
+    }
   };
 
   return (
@@ -184,6 +166,7 @@ const LoginPage = () => {
                 h="50"
                 mb="24px"
                 type="submit"
+                isLoading={isSubmitting}
               >
                 Iniciar sesión
               </Button>

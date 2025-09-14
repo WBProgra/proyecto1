@@ -4,6 +4,13 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+# Ignorar los directorios de caché de Python
+__pycache__/
+
+# Ignorar todos los archivos de Python compilado
+*.pyc
+
+
 
 # Virtualenv
 venv/
@@ -180,3 +187,12 @@ cython_debug/
 
 # vscode
 .vscode/
+./frontend/.vscode/
+./backend/.vscode/
+./frontend/package-lock.json
+./backend/package-lock.json
+/node_modules/
+/frontend/node_modules/
+frontend/package-lock.json
+
+frontend/yarn.lock

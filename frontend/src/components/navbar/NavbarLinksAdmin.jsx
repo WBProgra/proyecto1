@@ -16,52 +16,23 @@ import {
 import SearchBar from "./searchBar/SearchBar";
 import React from "react";
 // Assets
-// import navImage from "assets/img/layout/Navbar.png";
-import { FaEthereum } from "react-icons/fa";
 import { SidebarResponsive } from "../sidebar/Sidebar";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
 import { useAuth } from "../../context/AuthContext";
 
-// Services
-import { logoutService } from "../../services/UserServices";
-
-// React hot toast
-import toast from "react-hot-toast";
-
-const NavbarLinksAdmin = () => {
-  const { user, setUser, token, setToken } = useAuth();
+const NavbarLinksAdmin = (props) => {
+  const { user, logout } = useAuth();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue("gray.400", "white");
   let menuBg = useColorModeValue("white", "navy.800");
   const textColor = useColorModeValue("secondaryGray.900", "white");
-  const ethColor = useColorModeValue("gray.700", "white");
   const borderColor = useColorModeValue("#E6ECFA", "rgba(135, 140, 189, 0.3)");
-  const ethBg = useColorModeValue("secondaryGray.300", "navy.900");
-  const ethBox = useColorModeValue("white", "navy.800");
   const shadow = useColorModeValue(
     "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
     "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
   );
 
   const { colorMode, toggleColorMode } = useColorMode();
-
-  const onSubmit = () => {
-    logoutService({ refresh: token.refresh })
-      .then((response) => {
-        toast.success(response.message);
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("authTokens");
-      })
-      .catch((err) => {
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("authTokens");
-        toast.error("Your session has expired, please login again");
-      });
-  };
 
   return (
     <Flex
@@ -95,7 +66,7 @@ const NavbarLinksAdmin = () => {
           <Avatar
             _hover={{ cursor: "pointer" }}
             color="white"
-            name="Adela Parkson"
+            name={user?.username || "Usuario"}
             bg="#11047A"
             size="sm"
             w="40px"
@@ -125,7 +96,7 @@ const NavbarLinksAdmin = () => {
               👋&nbsp; Hola, {user?.username || "Usuario"}
             </Text>
           </Flex>
-          <Link onClick={onSubmit}>
+          <Link onClick={logout}>
             <Flex flexDirection="column" p="10px">
               <MenuItem borderRadius="8px" px="14px">
                 <Text fontSize="sm">Cerrar sesión</Text>
