@@ -8,10 +8,10 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-import { showSuccess, showError } from "../../services/NotificationService";
-import GenericTable from "../../components/Componentes_reutilizables/GenericTable";
-import GenericModal from "../../components/Componentes_reutilizables/GenericModal";
-import ItemService from "../../services/ItemService";
+import { showSuccess, handleError } from "../../../services/NotificationService";
+import GenericTable from "../../../components/Componentes_reutilizables/GenericTable";
+import GenericModal from "../../../components/Componentes_reutilizables/GenericModal";
+import ItemService from "../../../services/ItemService";
 import ItemForm from "./ItemForm";
 
 const ItemsPage = () => {
@@ -25,12 +25,15 @@ const ItemsPage = () => {
   const fetchItems = useCallback(async (pagination) => {
     try {
       const response = await ItemService.getItems(pagination);
+      console.log("TCL: fetchItems -> response", response);
       const { edges, pageInfo } = response.data.data.allItems;
       setItems(edges.map((edge) => edge.node)); // Extraemos los nodos
       setPageInfo(pageInfo);
     } catch (error) {
-      console.error("Error al obtener los items:", error);
-      showError("No se pudieron cargar los items.");
+      // La variable 'error' que recibe el catch ya contiene la respuesta con los errores.
+      // La línea "error = response.data.errors" era incorrecta porque 'response' no existe en este bloque.
+      console.error("Error al cargar los items:", error);
+      handleError(error);
     }
   }, []);
 
@@ -69,7 +72,7 @@ const ItemsPage = () => {
         `Error al ${modalMode === "create" ? "crear" : "actualizar"} el item:`,
         error
       );
-      showError("Ocurrió un problema al guardar el item.");
+      handleError("Ocurrió un problema al guardar el item.");
     } finally {
       setIsSubmitting(false);
     }
@@ -85,7 +88,7 @@ const ItemsPage = () => {
       handleCloseModal();
     } catch (error) {
       console.error("Error al eliminar el item:", error);
-      showError("No se pudo eliminar el item.");
+      handleError("No se pudo eliminar el item.");
     } finally {
       setIsSubmitting(false);
     }

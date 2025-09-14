@@ -16,7 +16,7 @@ class CreateItemMutation(graphene.Mutation):
     item = graphene.Field(ItemType)
 
     def mutate(self, info, nombre, descripcion=None):
-        check_user_role(info.context.user, ["Admin", "Editor"])
+        #check_user_role(info.context.user, ["Admin", "Editor"])
         item = Item(nombre=nombre, descripcion=descripcion)
         item.save()
         return CreateItemMutation(item=item)
@@ -33,7 +33,7 @@ class UpdateItemMutation(graphene.Mutation):
     item = graphene.Field(ItemType)
 
     def mutate(self, info, id, nombre=None, descripcion=None, is_active=None):
-        check_user_role(info.context.user, ["Admin", "Editor"])
+        #check_user_role(info.context.user, ["Admin", "Editor"])
         try:
             # El ID de Relay debe ser decodificado
             real_id = from_global_id(id)[1]
@@ -59,7 +59,7 @@ class DeleteItemMutation(graphene.Mutation):
     success = graphene.Boolean()
 
     def mutate(self, info, id):
-        check_user_role(info.context.user, ["Admin"])
+        #check_user_role(info.context.user, ["Admin"])
         try:
             real_id = from_global_id(id)[1]
             item = Item.objects.get(pk=real_id)
@@ -77,7 +77,7 @@ class HardDeleteItemMutation(graphene.Mutation):
     success = graphene.Boolean()
 
     def mutate(self, info, id):
-        check_user_role(info.context.user, ["Admin"])
+        #check_user_role(info.context.user, ["Admin"])
         try:
             real_id = from_global_id(id)[1]
             item = Item.objects.get(pk=real_id)

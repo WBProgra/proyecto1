@@ -32,7 +32,7 @@ class ItemQuery(graphene.ObjectType):
     item = relay.Node.Field(ItemNode)
 
     def resolve_all_items(self, info, **kwargs):
-        check_user_role(info.context.user, ["Admin", "Editor", "Viewer"])
+        # check_user_role(info.context.user, ["Admin", "Editor", "Viewer"])
         # El filtrado de is_deleted se aplica aquí para asegurar que no se
         # muestren.
         return Item.objects.filter(is_deleted=False)

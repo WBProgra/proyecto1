@@ -27,6 +27,7 @@ import SubTitle from "../../../components/texts/SubTitle";
 // Context
 import { useAuth } from "../../../context/AuthContext";
 
+import { showSuccess, handleError } from "../../../services/NotificationService";
 // React hook form
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -55,9 +56,7 @@ const LoginPage = () => {
     try {
       await login(data);
     } catch (err) {
-      // El error ya se muestra a través de un toast en el AuthContext
-      // Podemos agregar lógica adicional aquí si es necesario
-      console.log("Fallo en el submit del login");
+      handleError(err)
     }
   };
 

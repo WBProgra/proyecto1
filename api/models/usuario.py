@@ -23,8 +23,8 @@ class Usuario(AbstractUser, BaseModel):
         help_text="El rol asignado al usuario, que define sus permisos."
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # No incluir 'email' aquí
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     objects = CustomUserManager()
 

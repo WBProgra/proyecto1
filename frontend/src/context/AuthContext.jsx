@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginService, logoutService } from "../services/UserServices";
-import toast from "react-hot-toast";
+import { showSuccess, handleError } from "../services/NotificationService";
 
 const AuthContext = createContext();
 
@@ -22,23 +22,33 @@ export const AuthProvider = ({ children }) => {
     async (data) => {
       try {
         const response = await loginService(data);
-        toast.success("Inicio de sesión exitoso");
-        setUser(response.user);
-        setToken({ refresh: response.refreshToken, access: response.token });
-        localStorage.setItem("user", JSON.stringify(response.user));
-        localStorage.setItem(
-          "authTokens",
-          JSON.stringify({
-            refresh: response.refreshToken,
-            access: response.token,
-          })
-        );
-        navigate("/"); // Redirigir al dashboard
+        console.log("TCL: AuthProvider -> response", response)
+
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Se añade una validación para asegurar que la respuesta del login es exitosa
+        // y contiene los datos necesarios antes de proceder.
+        if (response && response.token && response.user) {
+
+
+          const tokens = { access: response.token, refresh: response.refreshToken };
+          
+          // Actualiza el estado y localStorage en un solo paso.
+          setUser(response.user);
+          setToken(tokens);
+          localStorage.setItem("user", JSON.stringify(response.user));
+          localStorage.setItem("authTokens", JSON.stringify(tokens));
+          
+          navigate("/"); // Redirige al dashboard.
+        } else {
+          // Si la respuesta no es la esperada (por ejemplo, login fallido),
+          // se lanza un error para que sea gestionado por el bloque catch.
+          throw new Error("Credenciales inválidas o respuesta inesperada del servidor.");
+        }
+        // --- FIN DE LA CORRECCIÓN ---
       } catch (error) {
-        console.error("Error en el inicio de sesión:", error);
-        toast.error(error.message || "Hubo un problema al iniciar sesión.");
-        // Propagar el error para que el componente de login pueda manejarlo
-        throw error;
+        // El servicio de notificaciones se encarga de mostrar el error.
+        handleError(error);
+        throw error; // Propaga el error para que el componente de login pueda detener su estado de carga.
       }
     },
     [navigate]
@@ -47,9 +57,11 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(() => {
     if (token) {
       logoutService({ refresh: token.refresh }).catch((err) => {
+        // Aunque falle la llamada al backend, el logout en el frontend se completa.
         console.error("Fallo el cierre de sesión en el servidor:", err);
       });
     }
+    // Limpia el estado y el localStorage.
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");

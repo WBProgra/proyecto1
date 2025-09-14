@@ -8,11 +8,20 @@ import PageNotFound from "../pages/PageNotFound";
 
 const PrivateRoutes = () => {
   const { user } = useAuth();
+  console.log("TCL: PrivateRoutes -> user", user)
   const privateRoutes = routes.filter((route) => route.isPrivate);
 
   const hasAccess = (route) => {
-    if (user?.isSuperuser) return true; // Superusuario tiene acceso a todo
-    if (!route.accessValidate || route.accessValidate.length === 0) return true; // Si no se definen roles, se permite el acceso
+    console.log("TCL: hasAccess -> route", route.accessValidate)
+    // 1. El superusuario siempre tiene acceso a todo.
+    if (user?.isSuperuser) {
+      return true;
+    }
+    // 2. Si la ruta no requiere un rol específico, se permite el acceso.
+    if (!route.accessValidate || route.accessValidate.length === 0) {
+      return true;
+    }
+    // 3. Se comprueba si el rol del usuario está en la lista de roles permitidos.
     return route.accessValidate.includes(user?.rol?.nombre);
   };
 

@@ -1,68 +1,84 @@
 // Chakra imports
-import {
-  Portal,
-  Box,
-  useDisclosure,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Portal, Box, useDisclosure } from "@chakra-ui/react";
+import React from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 // Layout components
 import NavbarAdmin from "../../components/navbar/NavbarAdmin";
 import Sidebar from "../../components/sidebar/Sidebar";
-import React, { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { routes } from "../../routes/routes";
 
 // Custom Chakra theme
-const AdminLayout = ({ children, navName = "Bienvenido" }) => {
-  // states and functions
-  const [fixed] = useState(false);
-  const bgColor = useColorModeValue("secondaryGray.400", "navy.900");
+export default function AdminLayout(props) {
+  const { ...rest } = props;
+  const { user } = useAuth(); // Obtiene el usuario para la validación
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Hook para el menú móvil
 
-  document.documentElement.dir = "ltr";
-  const { onOpen } = useDisclosure();
-  document.documentElement.dir = "ltr";
+  // --- LÓGICA DE ACCESO ---
+  // Replicamos la lógica de PrivateRoutes para obtener la ruta activa
+  const hasAccess = (route) => {
+    if (user?.isSuperuser) return true;
+    if (!route.accessValidate || route.accessValidate.length === 0) return true;
+    return user?.rol?.nombre && route.accessValidate.includes(user.rol.nombre);
+  };
+
+  const getActiveRoute = (routes) => {
+    for (let i = 0; i < routes.length; i++) {
+      if (window.location.href.indexOf(routes[i].path) !== -1) {
+        return routes[i].name;
+      }
+    }
+    return "Dashboard"; // Un nombre por defecto
+  };
+
+  const getRoutes = (routes) => {
+    return routes.map((prop, key) => {
+      if (hasAccess(prop)) {
+        return (
+          <Route path={prop.path} element={<prop.component />} key={key} />
+        );
+      }
+      return null;
+    });
+  };
+
   return (
     <Box>
-      <Box>
-        <Sidebar display="none" />
-        <Box
-          bg={bgColor}
-          float="right"
-          minHeight="100vh"
-          height="100%"
-          overflow="auto"
-          position="relative"
-          maxHeight="100%"
-          w={{ base: "100%", xl: "calc( 100% - 290px )" }}
-          maxWidth={{ base: "100%", xl: "calc( 100% - 290px )" }}
-          transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
-          transitionDuration=".2s, .2s, .35s"
-          transitionProperty="top, bottom, width"
-          transitionTimingFunction="linear, linear, ease"
-        >
-          <Portal>
-            <Box>
-              <NavbarAdmin
-                onOpen={onOpen}
-                brandText={navName}
-                secondary={false}
-                fixed={fixed}
-              />
-            </Box>
-          </Portal>
-
-          <Box
-            mx="auto"
-            p={{ base: "20px", md: "30px" }}
-            pe="20px"
-            minH="100vh"
-            pt="50px"
-          >
-            <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>{children}</Box>
+      <Sidebar routes={routes} isOpen={isOpen} onClose={onClose} />
+      <Box
+        float="right"
+        minHeight="100vh"
+        height="100%"
+        overflow="auto"
+        position="relative"
+        maxHeight="100%"
+        w={{ base: "100%", xl: "calc( 100% - 290px )" }}
+        maxWidth={{ base: "100%", xl: "calc( 100% - 290px )" }}
+      >
+        <Portal>
+          <Box>
+            <NavbarAdmin
+              onOpen={onOpen}
+              logoText={"Horizon UI Dashboard PRO"}
+              brandText={getActiveRoute(routes)}
+              {...rest}
+            />
           </Box>
+        </Portal>
+
+        <Box
+          mx="auto"
+          p={{ base: "20px", md: "30px" }}
+          pe="20px"
+          minH="100vh"
+          pt="50px"
+        >
+          {/* El contenido de la página se renderiza aquí */}
+          {props.children}
         </Box>
       </Box>
     </Box>
   );
-};
+}
 
-export default AdminLayout;

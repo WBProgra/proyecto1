@@ -12,7 +12,7 @@ const SidebarBrand = () => {
 
   // Ruta del logo del colegio
   const baseUrl = "http://localhost:8000/media/";
-  const logoPath = user?.colegio?.logo || "logos/placeholder.png";
+  const logoPath = "logos/placeholder.jpg";
   const logoUrl = `${baseUrl}${logoPath}`;
   console.log(logoUrl) // Imprime la URL del logo
   return (
@@ -22,6 +22,8 @@ const SidebarBrand = () => {
         alt="Logo Colegio"
         boxSize="100px"
         mb="20px"
+        width={"100px"}
+        height={"100px"}
       />
       <HSeparator mb="20px" />
     </Flex>

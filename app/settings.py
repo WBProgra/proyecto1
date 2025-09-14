@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     'api',  # Your app
+    "graphql_jwt.refresh_token",
 ]
 
 # Configuración de GraphQL

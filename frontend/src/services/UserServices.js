@@ -1,7 +1,4 @@
-// Importación de apiClient
 import apiClient from "./ApiClient";
-
-// Importación de servicios individuales
 import { refreshService } from "./UserServices/refreshService";
 
 // --- MUTATIONS ---
@@ -11,6 +8,18 @@ const LOGIN_MUTATION = `
     tokenAuth(username: $username, password: $password) {
       token
       refreshToken
+      user {
+        id
+        username
+        email
+        firstName
+        lastName
+        isSuperuser
+        rol {
+          id
+          nombre
+        }
+      }
     }
   }
 `;
@@ -30,7 +39,6 @@ const LOGOUT_MUTATION = `
  * @param {object} data - Contiene 'username' y 'password'.
  */
 export const loginService = async (data) => {
-  console.log("TCL: loginService -> data", data)
   const response = await apiClient.post("/graphql/", {
     query: LOGIN_MUTATION,
     variables: {
@@ -38,32 +46,23 @@ export const loginService = async (data) => {
       password: data.password,
     },
   });
-
-  if (response.data.errors) {
-    // Lanza el primer error encontrado para ser manejado por el componente
-    throw new Error(response.data.errors[0].message);
-  }
-
-  // Devuelve todo el payload de tokenAuth
+  // El interceptor de Axios se encargará de lanzar un error si la respuesta contiene errores GraphQL.
   return response.data.data.tokenAuth;
 };
+
 
 /**
  * Servicio para cerrar la sesión de un usuario.
  * @param {object} data - Contiene el 'refresh' token.
  */
 export const logoutService = async (data) => {
-  const response = await apiClient.post("/graphql/", {
-    query: LOGOUT_MUTATION,
-    variables: {
-      refreshToken: data.refresh,
-    },
-  });
-
-  if (response.data.errors) {
-    throw new Error(response.data.errors[0].message);
-  }
-  return response.data.data.deleteRefreshTokenCookie;
+    const response = await apiClient.post("/graphql/", {
+        query: LOGOUT_MUTATION,
+        variables: {
+            refreshToken: data.refresh,
+        },
+    });
+    return response.data.data.deleteRefreshTokenCookie;
 };
 
 // Re-exportamos refreshService para mantenerlo en el mismo módulo

@@ -3,24 +3,27 @@ from django.contrib.auth.models import BaseUserManager
 
 class CustomUserManager(BaseUserManager):
     """
-    Manager personalizado para el modelo Usuario donde el email es el
-    identificador único en lugar del nombre de usuario.
+    Manager personalizado para el modelo Usuario donde el username es el
+    identificador único.
     """
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, username, email, password=None, **extra_fields):
         """
-        Crea y guarda un Usuario con el email y contraseña dados.
+        Crea y guarda un Usuario con el username, email y contraseña dados.
         """
+        if not username:
+            raise ValueError('El campo Username es obligatorio')
         if not email:
             raise ValueError('El campo Email es obligatorio')
+
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, username, email, password=None, **extra_fields):
         """
-        Crea y guarda un superusuario con el email y contraseña dados.
+        Crea y guarda un superusuario con el username, email y contraseña dados.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -31,9 +34,4 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('El superusuario debe tener is_superuser=True.')
 
-        # El username no es necesario, pero lo seteamos al email por si algún
-        # componente de Django lo necesita internamente.
-        if 'username' not in extra_fields:
-            extra_fields['username'] = email
-
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(username, email, password, **extra_fields)

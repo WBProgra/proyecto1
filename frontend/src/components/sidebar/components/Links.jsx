@@ -33,6 +33,7 @@ export function SidebarLinks() {
   const { user } = useAuth();
 
   const routesSidebar = routes.filter((route) => route.showSidebar);
+  console.log("TCL: SidebarLinks -> routesSidebar", routesSidebar)
 
   return routesSidebar.map((route, key) => {
     return (
