@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Button, useDisclosure, Heading, Flex, HStack } from '@chakra-ui/react';
-import Swal from 'sweetalert2';
 
-import GenericTable from '../components/Componentes_reutilizables/GenericTable';
+import { showSuccess, showError } from '../../services/NotificationService';
+import GenericTable from '../../components/Componentes_reutilizables/GenericTable';
 import GenericModal from '../components/Componentes_reutilizables/GenericModal';
 import ItemService from '../services/ItemService';
 import ItemForm from './ItemForm';
@@ -23,7 +23,7 @@ const ItemsPage = () => {
       setPageInfo(pageInfo);
     } catch (error) {
       console.error('Error al obtener los items:', error);
-      Swal.fire('Error', 'No se pudieron cargar los items.', 'error');
+      showError('No se pudieron cargar los items.');
     }
   }, []);
 
@@ -50,12 +50,12 @@ const ItemsPage = () => {
       } else if (modalMode === 'edit') {
         await ItemService.updateItem({ id: selectedItem.id, ...values });
       }
-      Swal.fire('Éxito', `Item ${modalMode === 'create' ? 'creado' : 'actualizado'} con éxito.`, 'success');
+      showSuccess(`Item ${modalMode === 'create' ? 'creado' : 'actualizado'} con éxito.`);
       fetchItems({ first: 10 }); // Recargar la lista desde la primera página
       handleCloseModal();
     } catch (error) {
       console.error(`Error al ${modalMode === 'create' ? 'crear' : 'actualizar'} el item:`, error);
-      Swal.fire('Error', 'Ocurrió un problema al guardar el item.', 'error');
+      showError('Ocurrió un problema al guardar el item.');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,12 +66,12 @@ const ItemsPage = () => {
     try {
       // El ID de Relay es globalmente único, no necesitamos el `node`
       await ItemService.deleteItem(selectedItem.id);
-      Swal.fire('Eliminado', 'El item ha sido eliminado.', 'success');
+      showSuccess('El item ha sido eliminado.');
       fetchItems({ first: 10 });
       handleCloseModal();
     } catch (error) {
       console.error('Error al eliminar el item:', error);
-      Swal.fire('Error', 'No se pudo eliminar el item.', 'error');
+      showError('No se pudo eliminar el item.');
     } finally {
       setIsSubmitting(false);
     }

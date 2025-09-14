@@ -4,6 +4,7 @@ from .base_model import BaseModel
 from .rol import Rol
 from .managers import CustomUserManager
 
+
 class Usuario(AbstractUser, BaseModel):
     """
     Modelo de usuario personalizado que extiende el `AbstractUser` de Django.
@@ -11,7 +12,9 @@ class Usuario(AbstractUser, BaseModel):
     """
     # El username de AbstractUser se deshabilita asignando None.
     username = None
-    email = models.EmailField(unique=True, help_text="Dirección de correo electrónico única.")
+    email = models.EmailField(
+        unique=True, help_text="Dirección de correo electrónico única."
+    )
     rol = models.ForeignKey(
         Rol,
         on_delete=models.SET_NULL,
@@ -21,7 +24,7 @@ class Usuario(AbstractUser, BaseModel):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name'] # No incluir 'email' aquí
+    REQUIRED_FIELDS = ['first_name', 'last_name']  # No incluir 'email' aquí
 
     objects = CustomUserManager()
 

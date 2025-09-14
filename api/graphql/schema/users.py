@@ -4,17 +4,20 @@ from ..permissions import check_is_authenticated, check_is_superuser
 
 from api.models import Usuario, Rol
 
+
 class UsuarioType(DjangoObjectType):
     """Tipo de dato para el modelo Usuario."""
     class Meta:
         model = Usuario
         exclude = ("password",)
 
+
 class RolType(DjangoObjectType):
     """Tipo de dato para el modelo Rol."""
     class Meta:
         model = Rol
         fields = ("id", "nombre")
+
 
 class UserQuery(graphene.ObjectType):
     """Consultas relacionadas con el modelo Usuario."""

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { refreshService } from "./UserServices";
+import { refreshService } from "./UserServices/refreshService";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const apiClient = axios.create({
@@ -29,13 +29,13 @@ apiClient.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh_token");
         if (!refreshToken) {
-          console.error("No se encontró el token de refresco.");
-          throw new Error("Token de refresco no encontrado.");
+          window.location.href = "/login";
+          return Promise.reject(new Error("Token de refresco no encontrado."));
         }
 
         // Renueva el token de acceso
-        const response = await refreshService({ refresh: refreshToken });
-        const newAccessToken = response.access;
+        const response = await refreshService(refreshToken);
+        const newAccessToken = response.token;
 
         // Guarda el nuevo token de acceso
         localStorage.setItem("access_token", newAccessToken);
@@ -45,6 +45,10 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.error("No se pudo refrescar el token:", refreshError);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
