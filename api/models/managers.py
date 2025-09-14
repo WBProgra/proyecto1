@@ -1,9 +1,10 @@
 from django.contrib.auth.models import BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):
     """
-    Manager personalizado para el modelo Usuario donde el email es el identificador único
-    en lugar del nombre de usuario.
+    Manager personalizado para el modelo Usuario donde el email es el
+    identificador único en lugar del nombre de usuario.
     """
     def create_user(self, email, password=None, **extra_fields):
         """

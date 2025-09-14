@@ -3,7 +3,7 @@ import { MdHome, MdList } from "react-icons/md";
 
 // pages
 import LoginPage from "../pages/public/LoginScreen/LoginPage";
-import ItemsPage from "../pages/ItemsPage";
+import ItemsPage from "../pages/private/ItemsPage";
 
 export const routes = [
   {
@@ -13,7 +13,7 @@ export const routes = [
     component: ItemsPage, // Usamos ItemsPage como página principal por ahora
     isPrivate: true,
     showSidebar: true,
-    accessValidate: [], // Se gestionará por roles genéricos
+    accessValidate: ["Admin", "Editor", "Viewer"], // Se gestionará por roles genéricos
   },
   {
     name: "Items",
@@ -22,7 +22,7 @@ export const routes = [
     component: ItemsPage,
     isPrivate: true,
     showSidebar: true,
-    accessValidate: [], // Se gestionará por roles genéricos
+    accessValidate: ["Admin", "Editor", "Viewer"], // Se gestionará por roles genéricos
   },
   {
     // Ruta de login pública

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 import apiClient from '../services/ApiClient';
+import { showSuccess, showError } from '../services/NotificationService';
 
 const AuthContext = createContext();
 
@@ -22,10 +23,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       const { token, refreshToken } = response.data.data.tokenAuth;
-      const tokens = { access: token, refresh: refreshToken };
 
-      localStorage.setItem('authTokens', JSON.stringify(tokens));
-      setAuthTokens(tokens);
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('refresh_token', refreshToken);
+      setAuthTokens({ access: token, refresh: refreshToken });
 
       // Actualizar el token en el header de apiClient para la siguiente petición
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -40,9 +41,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
 
+      showSuccess('Inicio de sesión exitoso');
       navigate('/'); // Redirigir al dashboard
     } catch (error) {
       console.error("Error en el inicio de sesión:", error);
+      showError(error.message || 'Hubo un problema al iniciar sesión.');
       // Propagar el error para que el componente de login pueda manejarlo
       throw error;
     }
@@ -52,7 +55,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setAuthTokens(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('authTokens');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
     navigate('/login');
   }, [navigate]);
@@ -60,6 +64,7 @@ export const AuthProvider = ({ children }) => {
   const contextData = {
     user,
     authTokens,
+    setAuthTokens,
     login,
     logout,
   };

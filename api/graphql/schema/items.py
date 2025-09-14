@@ -4,7 +4,8 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 from api.models import Item
-from ..permissions import check_is_authenticated
+from ..permissions import check_user_role
+
 
 class ItemNode(DjangoObjectType):
     """
@@ -20,6 +21,7 @@ class ItemNode(DjangoObjectType):
         }
         interfaces = (relay.Node,)
 
+
 class ItemQuery(graphene.ObjectType):
     """Consultas relacionadas con el modelo Item."""
 
@@ -30,6 +32,7 @@ class ItemQuery(graphene.ObjectType):
     item = relay.Node.Field(ItemNode)
 
     def resolve_all_items(self, info, **kwargs):
-        check_is_authenticated(info.context.user)
-        # El filtrado de is_deleted se aplica aquí para asegurar que no se muestren.
+        check_user_role(info.context.user, ["Admin", "Editor", "Viewer"])
+        # El filtrado de is_deleted se aplica aquí para asegurar que no se
+        # muestren.
         return Item.objects.filter(is_deleted=False)
