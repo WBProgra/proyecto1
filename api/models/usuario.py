@@ -11,7 +11,7 @@ class Usuario(AbstractUser, BaseModel):
     Usa el email como campo de autenticación principal.
     """
     # El username de AbstractUser se deshabilita asignando None.
-    username = None
+    # username = None
     email = models.EmailField(
         unique=True, help_text="Dirección de correo electrónico única."
     )
