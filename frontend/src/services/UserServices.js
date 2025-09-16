@@ -32,6 +32,78 @@ const LOGOUT_MUTATION = `
   }
 `;
 
+const REFRESH_MUTATION = `
+  mutation RefreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      token
+      refreshToken
+      payload
+    }
+  }
+`;
+
+const ME_QUERY = `
+  query MeQuery {
+    me {
+      id
+      username
+      email
+      firstName
+      lastName
+      isSuperuser
+      rol {
+        id
+        nombre
+      }
+    }
+  }
+`;
+
+/**
+ * Refresca el token de acceso y devuelve los nuevos tokens y los datos del usuario.
+ * Esta es la función clave para validar la sesión al iniciar la aplicación.
+ */
+export const refreshAndGetUser = async () => {
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+  if (!authTokens?.refresh) {
+    throw new Error("No hay token de refresco disponible.");
+  }
+
+  // Paso 1: Obtener un nuevo accessToken usando el refreshToken.
+  const refreshResponse = await apiClient.post("/graphql/", {
+    query: REFRESH_MUTATION,
+    variables: { refreshToken: authTokens.refresh },
+  });
+
+  const newTokens = refreshResponse.data.data.refreshToken;
+  if (!newTokens || !newTokens.token) {
+    throw new Error("La respuesta del servidor para refrescar el token no es válida.");
+  }
+
+  // Guardamos inmediatamente los nuevos tokens para que las siguientes peticiones los usen.
+  const updatedAuthTokens = {
+    access: newTokens.token,
+    // El backend podría devolver un nuevo refresh token, lo usamos si está disponible.
+    refresh: newTokens.refreshToken || authTokens.refresh,
+  };
+  localStorage.setItem("authTokens", JSON.stringify(updatedAuthTokens));
+
+  // Paso 2: Con el nuevo accessToken ya configurado en apiClient, obtenemos los datos del usuario.
+  const userResponse = await apiClient.post("/graphql/", {
+    query: ME_QUERY,
+  });
+
+  const user = userResponse.data.data.me;
+  if (!user) {
+    throw new Error("No se pudieron obtener los datos del usuario después de refrescar el token.");
+  }
+  
+  // Guardamos los datos actualizados del usuario.
+  localStorage.setItem("user", JSON.stringify(user));
+
+  return { user, tokens: updatedAuthTokens };
+};
+
 // --- SERVICES ---
 
 /**

@@ -107,7 +107,7 @@ const ItemsPage = () => {
   };
 
   return (
-    <Box p={8}>
+    <Box p={100}>
       <Flex justify="space-between" align="center" mb={6}>
         <Heading>Gestión de Items</Heading>
         <Button colorScheme="blue" onClick={() => handleOpenModal("create")}>

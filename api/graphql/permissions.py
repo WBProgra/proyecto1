@@ -1,6 +1,7 @@
 from graphql import GraphQLError
 
 def check_permission(user, permission_attr: str):
+    print("🐍 File: graphql/permissions.py | Line: 4 | undefined ~ user",user)
     """
     Verifica si un usuario tiene un permiso específico.
     El permiso se comprueba a través de un atributo booleano en el modelo Rol.

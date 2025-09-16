@@ -45,7 +45,7 @@ const NavbarLinksAdmin = (props) => {
       borderRadius="30px"
       boxShadow={shadow}
     >
-      <SearchBar mb="unset" me="10px" borderRadius="30px" />
+      {/* <SearchBar mb="unset" me="10px" borderRadius="30px" /> */}
       <SidebarResponsive />
 
       <Menu>

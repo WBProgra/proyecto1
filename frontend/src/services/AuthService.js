@@ -14,8 +14,6 @@ const ME_QUERY = `
     me {
       id
       email
-      firstName
-      lastName
       rol {
         id
         nombre

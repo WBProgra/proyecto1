@@ -18,6 +18,7 @@ class CreateItemMutation(graphene.Mutation):
     item = graphene.Field(ItemType)
 
     def mutate(self, info, nombre, descripcion=None):
+        print("🐍 File: mutations/items.py | Line: 21 | Arguments: ~ info",info.context.user)
         # Ahora la validación es específica para la acción de crear.
         check_permission(info.context.user, 'can_create_items')
         item = Item(nombre=nombre, descripcion=descripcion)
