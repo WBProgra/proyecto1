@@ -8,13 +8,11 @@ import { useAuth } from "../../../context/AuthContext";
 
 const SidebarBrand = () => {
   const { user } = useAuth();
-  console.log(user) // Obtiene el usuario logueado
 
   // Ruta del logo del colegio
   const baseUrl = "http://localhost:8000/media/";
   const logoPath = "logos/placeholder.jpg";
   const logoUrl = `${baseUrl}${logoPath}`;
-  console.log(logoUrl) // Imprime la URL del logo
   return (
     <Flex align="center" direction="column">
       <Image

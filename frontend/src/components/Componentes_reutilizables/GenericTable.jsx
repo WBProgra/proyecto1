@@ -13,7 +13,7 @@ import {
   Flex,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons'; // Se importa ViewIcon
 
 /**
  * Un componente de tabla genérico y reutilizable.
@@ -21,11 +21,12 @@ import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
  * @param {object} props - Las propiedades del componente.
  * @param {Array<object>} props.columns - La configuración de las columnas. Cada objeto debe tener `Header` y `accessor`.
  * @param {Array<object>} props.data - Los datos a mostrar en la tabla.
+ * @param {Function} [props.onView] - Función que se llama al hacer clic en el botón de visualizar. Recibe la fila de datos.
  * @param {Function} [props.onEdit] - Función que se llama al hacer clic en el botón de editar. Recibe la fila de datos.
  * @param {Function} [props.onDelete] - Función que se llama al hacer clic en el botón de eliminar. Recibe la fila de datos.
  * @param {Function} [props.renderActions] - Una función de renderizado opcional para acciones personalizadas.
  */
-const GenericTable = ({ columns, data = [], onEdit, onDelete, renderActions }) => {
+const GenericTable = ({ columns, data = [], onEdit, onDelete, onView, renderActions }) => {
   const headerBg = useColorModeValue('gray.100', 'gray.700');
   const rowHoverBg = useColorModeValue('gray.50', 'gray.600');
 
@@ -53,7 +54,7 @@ const GenericTable = ({ columns, data = [], onEdit, onDelete, renderActions }) =
                   {col.Header}
                 </Th>
               ))}
-              {(onEdit || onDelete || renderActions) && (
+              {(onView || onEdit || onDelete || renderActions) && (
                 <Th textAlign="center">Acciones</Th>
               )}
             </Tr>
@@ -63,15 +64,25 @@ const GenericTable = ({ columns, data = [], onEdit, onDelete, renderActions }) =
               <Tr key={row.id || rowIndex} _hover={{ bg: rowHoverBg }}>
                 {columns.map((col) => (
                   <Td key={`${rowIndex}-${col.accessor}`} textAlign="center">
-                    {/* Renderiza un booleano como 'Sí' o 'No' para mejor legibilidad */}
                     {typeof row[col.accessor] === 'boolean'
                       ? row[col.accessor] ? 'Sí' : 'No'
                       : row[col.accessor] || '-'}
                   </Td>
                 ))}
-                {(onEdit || onDelete || renderActions) && (
+                {(onView || onEdit || onDelete || renderActions) && (
                   <Td textAlign="center">
                     <Flex align="center" justify="center">
+                      {onView && (
+                        <Tooltip label="Visualizar" aria-label="Visualizar">
+                          <IconButton
+                            icon={<ViewIcon />}
+                            size="sm"
+                            colorScheme="blue"
+                            onClick={() => onView(row)}
+                            mr={2}
+                          />
+                        </Tooltip>
+                      )}
                       {onEdit && (
                         <Tooltip label="Editar" aria-label="Editar">
                           <IconButton

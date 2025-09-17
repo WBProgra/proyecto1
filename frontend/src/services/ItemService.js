@@ -2,8 +2,26 @@ import apiClient from './ApiClient';
 
 // Define las consultas y mutaciones de GraphQL como cadenas de texto
 const GET_ITEMS_QUERY = `
-  query GetAllItems($first: Int, $after: String) {
-    allItems(first: $first, after: $after) {
+  query GetAllItems(
+    $first: Int, 
+    $after: String, 
+    $last: Int, 
+    $before: String,
+    $search: String,
+    $isActive: Boolean,
+    $createdAfter: Date,
+    $createdBefore: Date
+  ) {
+    allItems(
+      first: $first, 
+      after: $after, 
+      last: $last, 
+      before: $before,
+      search: $search,
+      isActive: $isActive,
+      createdAfter: $createdAfter,
+      createdBefore: $createdBefore
+    ) {
       edges {
         cursor
         node {
@@ -57,6 +75,19 @@ const DELETE_ITEM_MUTATION = `
   }
 `;
 
+const GET_ITEM_BY_ID_QUERY = `
+  query GetItemById($id: ID!) {
+    item(id: $id) {
+      id
+      nombre
+      descripcion
+      isActive
+      created
+      modified
+    }
+  }
+`;
+
 // Objeto del servicio que encapsula las llamadas a la API
 const ItemService = {
   /**
@@ -103,6 +134,18 @@ const ItemService = {
   deleteItem: (id) => {
     return apiClient.post('/graphql/', {
       query: DELETE_ITEM_MUTATION,
+      variables: { id },
+    });
+  },
+
+  /**
+   * Obtiene un item específico por su ID.
+   * @param {string} id - El ID global del item.
+   * @returns {Promise<Object>} La respuesta de la API.
+   */
+  getItemById: (id) => {
+    return apiClient.post('/graphql/', {
+      query: GET_ITEM_BY_ID_QUERY,
       variables: { id },
     });
   },

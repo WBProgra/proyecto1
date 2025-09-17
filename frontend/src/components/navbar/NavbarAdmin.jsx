@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { IoMenuOutline } from "react-icons/io5";
 import NavbarLinksAdmin from "./NavbarLinksAdmin";
+import Breadcrumbs from "./Breadcrumbs";
 
 export default function NavbarAdmin(props) {
   const { onOpen } = props;
@@ -65,7 +66,10 @@ export default function NavbarAdmin(props) {
             />
           </Flex>
         </Flex>
-
+        {/* Añade el componente de Breadcrumbs aquí */}
+        <Box display={{ base: "none", md: "block" }}>
+          <Breadcrumbs />
+        </Box>
         <Box ms="auto" w={{ sm: "100%", md: "unset" }}>
           <NavbarLinksAdmin />
         </Box>

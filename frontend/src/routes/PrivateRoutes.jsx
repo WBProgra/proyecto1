@@ -5,14 +5,13 @@ import { useAuth } from "../context/AuthContext";
 import { routes } from "./routes";
 import AdminLayout from "../layouts/admin/AdminLayout";
 import PageNotFound from "../pages/PageNotFound";
+import ItemDetailPage from "../pages/private/Items/ItemDetailPage";
 
 const PrivateRoutes = () => {
   const { user } = useAuth();
-  console.log("TCL: PrivateRoutes -> user", user)
   const privateRoutes = routes.filter((route) => route.isPrivate);
 
   const hasAccess = (route) => {
-    console.log("TCL: hasAccess -> route", route.accessValidate)
     // 1. El superusuario siempre tiene acceso a todo.
     if (user?.isSuperuser) {
       return true;

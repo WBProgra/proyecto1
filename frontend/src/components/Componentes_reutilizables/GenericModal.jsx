@@ -1,15 +1,3 @@
-import React from 'react';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-} from '@chakra-ui/react';
-
 /**
  * Un componente de modal genérico y reutilizable.
  *
@@ -23,6 +11,21 @@ import {
  * @param {string} [props.cancelButtonText='Cancelar'] - Texto para el botón de cancelación.
  * @param {boolean} [props.isConfirming=false] - Si es true, muestra un spinner en el botón de confirmación.
  */
+// frontend/src/components/Componentes_reutilizables/GenericModal.jsx
+
+import React from 'react';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  useColorModeValue, // 1. Importa el hook
+} from '@chakra-ui/react';
+
 const GenericModal = ({
   isOpen,
   onClose,
@@ -33,10 +36,15 @@ const GenericModal = ({
   cancelButtonText = 'Cancelar',
   isConfirming = false,
 }) => {
+
+  // 2. Define el color de fondo dependiendo del tema (claro/oscuro)
+  const modalBg = useColorModeValue('white', 'navy.800');
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent>
+      {/* 3. Aplica el color de fondo al ModalContent */}
+      <ModalContent bg={modalBg}>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{children}</ModalBody>

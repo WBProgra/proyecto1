@@ -52,11 +52,28 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(
     async (data) => {
-      // Tu lógica de login se mantiene igual...
+      try {
+        const response = await loginService(data);
+        const { user: userData, token, refreshToken } = response;
+
+        const tokens = { access: token, refresh: refreshToken };
+
+        setUser(userData);
+        setToken(tokens);
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("authTokens", JSON.stringify(tokens));
+
+        // showSuccess(`Bienvenido, ${userData.username}`);
+        navigate("/"); // Redirige al dashboard
+      } catch (error) {
+        // El handleError ya está en LoginPage, pero puedes añadir un log aquí si lo necesitas
+        console.error("Error en el login:", error);
+        throw error; // Lanza el error para que LoginPage lo pueda capturar
+      }
     },
     [navigate]
   );
-  
   const contextData = { user, setUser, token, setToken, login, logout, isLoading };
 
   // Mientras se valida la sesión, mostramos un indicador de carga.
